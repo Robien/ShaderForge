@@ -3,78 +3,90 @@ using UnityEditor;
 using System.Collections;
 
 
-namespace ShaderForge {
+namespace ShaderForge
+{
 	[System.Serializable]
-	public class SFN_Tex2dAsset : SF_Node {
+	public class SFN_Tex2dAsset : SF_Node
+	{
 
 
-		public Texture textureAsset;					// TODO: Use a parent class, this looks ridiculous
+		public Texture textureAsset;                    // TODO: Use a parent class, this looks ridiculous
 		public NoTexValue noTexValue = NoTexValue.White;// TODO: Use a parent class, this looks ridiculous
-		public bool markedAsNormalMap = false; 			// TODO: Use a parent class, this looks ridiculous
+		public bool markedAsNormalMap = false;          // TODO: Use a parent class, this looks ridiculous
 
-		public SFN_Tex2dAsset() {
+		public SFN_Tex2dAsset()
+		{
 
 		}
 
-		public override void Initialize() {
-			base.Initialize( "Texture Asset", InitialPreviewRenderMode.BlitQuad );
+		public override void Initialize()
+		{
+			base.Initialize("Texture Asset", InitialPreviewRenderMode.BlitQuad);
 			node_height = (int)(rect.height - 6f); // Odd, but alright...
-			base.UseLowerPropertyBox( true, true );
+			base.UseLowerPropertyBox(true, true);
 			base.texture.CompCount = 4;
 			base.showColor = true;
 			neverDefineVariable = true;
 			isFloatPrecisionBasedVariable = false;
 			base.shaderGenMode = ShaderGenerationMode.Manual;
 			//alwaysDefineVariable = true;
-			property = ScriptableObject.CreateInstance<SFP_Tex2d>().Initialize( this );
+			property = ScriptableObject.CreateInstance<SFP_Tex2d>().Initialize(this);
 
 			connectors = new SF_NodeConnector[]{
 				SF_NodeConnector.Create(this,"TEX","Tex",ConType.cOutput,ValueType.TexAsset).WithColor(SF_Node.colorExposed)
 			};
 		}
 
-		public override bool IsUniformOutput() {
+		public override bool IsUniformOutput()
+		{
 			return false;
 		}
 
 
 
-		public bool IsNormalMap() {
+		public bool IsNormalMap()
+		{
 			return markedAsNormalMap;
 		}
 
 
-		public bool IsAssetNormalMap() {
+		public bool IsAssetNormalMap()
+		{
 
-			string path = AssetDatabase.GetAssetPath( textureAsset );
-			if( string.IsNullOrEmpty( path ) )
+			string path = AssetDatabase.GetAssetPath(textureAsset);
+			if (string.IsNullOrEmpty(path))
 				return false;
-			else{
-				AssetImporter importer = UnityEditor.AssetImporter.GetAtPath( path );
-				if(importer is TextureImporter)
+			else
+			{
+				AssetImporter importer = UnityEditor.AssetImporter.GetAtPath(path);
+				if (importer is TextureImporter)
 					return ((TextureImporter)importer).textureType == TextureImporterType.NormalMap;
+#if !UNITY_2018_1_OR_NEWER
 				else if(textureAsset is ProceduralTexture && textureAsset.name.EndsWith("_Normal"))
 					return true; // When it's a ProceduralTexture having _Normal as a suffix
+#endif
 				else
 					return false; // When it's a RenderTexture or ProceduralTexture
 			}
 
 		}
 
-		public bool HasAlpha() {
-			if( textureAsset == null ) return false;
-			string path = AssetDatabase.GetAssetPath( textureAsset );
-			if( string.IsNullOrEmpty( path ) ) return false;
-			return ( (TextureImporter)UnityEditor.AssetImporter.GetAtPath( path ) ).DoesSourceTextureHaveAlpha();
+		public bool HasAlpha()
+		{
+			if (textureAsset == null) return false;
+			string path = AssetDatabase.GetAssetPath(textureAsset);
+			if (string.IsNullOrEmpty(path)) return false;
+			return ((TextureImporter)UnityEditor.AssetImporter.GetAtPath(path)).DoesSourceTextureHaveAlpha();
 		}
 
 		// TODO: MIP selection
-		public override string Evaluate( OutChannel channel = OutChannel.All ) {
+		public override string Evaluate(OutChannel channel = OutChannel.All)
+		{
 
 			//if( varDefined )
-				return GetVariableName();
+			return GetVariableName();
 			//else
-				//DefineVariable(); // This lags for some reason
+			//DefineVariable(); // This lags for some reason
 
 			/*
 			bool useLOD = GetInputIsConnected( 1 ) || (SF_Evaluator.inVert || SF_Evaluator.inTess);
@@ -93,35 +105,42 @@ namespace ShaderForge {
 			}
 			*/
 			//Debug.LogError( "Invalid evaluation of " + property.name );
-//			return "";
+			//			return "";
 		}
 
 
-		public void UnpackNormals( ref Texture2D t ) {
+		public void UnpackNormals(ref Texture2D t)
+		{
 			Color[] colors = t.GetPixels();
-			for( int i = 0; i < colors.Length; i++ ) {
-				colors[i] = UnpackNormal( colors[i] );
+			for (int i = 0; i < colors.Length; i++)
+			{
+				colors[i] = UnpackNormal(colors[i]);
 			}
-			t.SetPixels( colors );
+			t.SetPixels(colors);
 			t.Apply();
 		}
 
-		public Color UnpackNormal( Color c ) {
+		public Color UnpackNormal(Color c)
+		{
 			Vector3 normal = Vector3.zero;
 
-			normal = new Vector2( c.a, c.g ) * 2f - Vector2.one;
-			normal.z = Mathf.Sqrt( 1f - normal.x * normal.x - normal.y * normal.y );
+			normal = new Vector2(c.a, c.g) * 2f - Vector2.one;
+			normal.z = Mathf.Sqrt(1f - normal.x * normal.x - normal.y * normal.y);
 
 			// TODO: Check color clamp method!
-			return SF_Tools.VectorToColor( normal );
+			return SF_Tools.VectorToColor(normal);
 		}
 
 
 
-		public override bool Draw() {
-			if( IsGlobalProperty()){
+		public override bool Draw()
+		{
+			if (IsGlobalProperty())
+			{
 				rect.height = (int)(NODE_HEIGHT + 16f + 2);
-			} else {
+			}
+			else
+			{
 				rect.height = (int)(NODE_HEIGHT + 32f + 2);
 			}
 
@@ -133,59 +152,82 @@ namespace ShaderForge {
 			return true;//!CheckIfDeleted();
 		}
 
-		public override void OnDelete() {
+		public override void OnDelete()
+		{
 			textureAsset = null;
 		}
 
-		public override void NeatWindow(  ) {
+		public override void NeatWindow()
+		{
 
 			GUI.skin.box.clipping = TextClipping.Overflow;
-			GUI.BeginGroup( rect );
+			GUI.BeginGroup(rect);
 
-			if(IsGlobalProperty()){
+			if (IsGlobalProperty())
+			{
 				GUI.enabled = false;
 			}
 
-			if( IsProperty() && Event.current.type == EventType.DragPerform && rectInner.Contains(Event.current.mousePosition) ) {
+			if (IsProperty() && Event.current.type == EventType.DragPerform && rectInner.Contains(Event.current.mousePosition))
+			{
 				Object droppedObj = DragAndDrop.objectReferences[0];
-				if( droppedObj is Texture2D || droppedObj is ProceduralTexture || droppedObj is RenderTexture) {
+#if !UNITY_2018_1_OR_NEWER
+				if (droppedObj is Texture2D || droppedObj is ProceduralTexture || droppedObj is RenderTexture)
+#else
+				if (droppedObj is Texture2D || droppedObj is RenderTexture)
+#endif
+				{
 					Event.current.Use();
 					textureAsset = droppedObj as Texture;
 					OnAssignedTexture();
 				}
 			}
-			
-			if( IsProperty() && Event.current.type == EventType.dragUpdated ) {
-				if(DragAndDrop.objectReferences.Length > 0){
+
+			if (IsProperty() && Event.current.type == EventType.DragUpdated)
+			{
+				if (DragAndDrop.objectReferences.Length > 0)
+				{
 					Object dragObj = DragAndDrop.objectReferences[0];
-					if( dragObj is Texture2D || dragObj is ProceduralTexture || dragObj is RenderTexture) {
+#if !UNITY_2018_1_OR_NEWER
+					if (dragObj is Texture2D || dragObj is ProceduralTexture || dragObj is RenderTexture)
+#else
+					if (dragObj is Texture2D || dragObj is RenderTexture)
+#endif
+					{
 						DragAndDrop.visualMode = DragAndDropVisualMode.Link;
 						editor.nodeBrowser.CancelDrag();
 						Event.current.Use();
-					} else {
+					}
+					else
+					{
 						DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
 					}
-				} else {
+				}
+				else
+				{
 					DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
 				}
 			}
 
-			if(IsGlobalProperty()){
+			if (IsGlobalProperty())
+			{
 				GUI.enabled = true;
 			}
 
 
 
 			Color prev = GUI.color;
-			if( textureAsset ) {
+			if (textureAsset)
+			{
 				GUI.color = Color.white;
-				GUI.DrawTexture( rectInner, texture.texture, ScaleMode.StretchToFill, false );
+				GUI.DrawTexture(rectInner, texture.texture, ScaleMode.StretchToFill, false);
 			} //else {
-			//GUI.color = new Color( GUI.color.r, GUI.color.g, GUI.color.b,0.5f);
-			//GUI.Label( rectInner, "Empty");
-			//}
+			  //GUI.color = new Color( GUI.color.r, GUI.color.g, GUI.color.b,0.5f);
+			  //GUI.Label( rectInner, "Empty");
+			  //}
 
-			if( showLowerPropertyBox ) {
+			if (showLowerPropertyBox)
+			{
 				GUI.color = Color.white;
 				DrawLowerPropertyBox();
 			}
@@ -194,26 +236,33 @@ namespace ShaderForge {
 
 
 
-			if( rectInner.Contains( Event.current.mousePosition ) && !SF_NodeConnector.IsConnecting() && !IsGlobalProperty() ) {
-				Rect selectRect = new Rect( rectInner );
+			if (rectInner.Contains(Event.current.mousePosition) && !SF_NodeConnector.IsConnecting() && !IsGlobalProperty())
+			{
+				Rect selectRect = new Rect(rectInner);
 				selectRect.yMin += 80;
 				selectRect.xMin += 40;
 
-				if(GUI.Button( selectRect, "Select", EditorStyles.miniButton )){
-					EditorGUIUtility.ShowObjectPicker<Texture>( textureAsset, false, "", this.id );
+				if (GUI.Button(selectRect, "Select", EditorStyles.miniButton))
+				{
+					EditorGUIUtility.ShowObjectPicker<Texture>(textureAsset, false, "", this.id);
 					Event.current.Use();
 				}
 
 			}
 
-			
-			if( !IsGlobalProperty() && Event.current.type == EventType.ExecuteCommand && Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == this.id ) {
+
+			if (!IsGlobalProperty() && Event.current.type == EventType.ExecuteCommand && Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == this.id)
+			{
 				Event.current.Use();
 				Texture newTextureAsset = EditorGUIUtility.GetObjectPickerObject() as Texture;
-				if(newTextureAsset != textureAsset){
-					if(newTextureAsset == null){
+				if (newTextureAsset != textureAsset)
+				{
+					if (newTextureAsset == null)
+					{
 						UndoRecord("unassign texture of " + property.nameDisplay);
-					} else {
+					}
+					else
+					{
 						UndoRecord("switch texture to " + newTextureAsset.name + " in " + property.nameDisplay);
 					}
 					textureAsset = newTextureAsset;
@@ -226,10 +275,10 @@ namespace ShaderForge {
 
 
 
-		//	GUI.DragWindow();
+			//	GUI.DragWindow();
 
-			
-			
+
+
 
 			/*
 			EditorGUI.BeginChangeCheck();
@@ -241,26 +290,31 @@ namespace ShaderForge {
 
 		}
 
-		public override void RefreshValue() {
-			base.RefreshValue( 0, 0 );
+		public override void RefreshValue()
+		{
+			base.RefreshValue(0, 0);
 			//RenderToTexture();
 		}
 
-		public override int GetEvaluatedComponentCount() {
-			if( IsNormalMap() )
+		public override int GetEvaluatedComponentCount()
+		{
+			if (IsNormalMap())
 				return 3;
 			return 4;
 		}
 
-		public override void PrepareRendering( Material mat ) {
-			if( textureAsset != null ) {
+		public override void PrepareRendering(Material mat)
+		{
+			if (textureAsset != null)
+			{
 				mat.mainTexture = textureAsset;
-				mat.SetFloat( "_IsNormal", IsNormalMap() ? 1 : 0 );
+				mat.SetFloat("_IsNormal", IsNormalMap() ? 1 : 0);
 			}
 		}
 
 
-		public void OnAssignedTexture() {
+		public void OnAssignedTexture()
+		{
 
 			/*
 			if( HasAlpha() ) {
@@ -272,7 +326,7 @@ namespace ShaderForge {
 				base.texture.CompCount = 3;
 			}*/
 			RefreshNoTexValueAndNormalUnpack();
-			editor.shaderEvaluator.ApplyProperty( this );
+			editor.shaderEvaluator.ApplyProperty(this);
 			OnUpdateNode();
 		}
 
@@ -281,49 +335,59 @@ namespace ShaderForge {
 		// TODO: Use a parent class, this looks ridiculous
 		// TODO: Use a parent class, this looks ridiculous
 		// TODO: Use a parent class, this looks ridiculous
-		public void RefreshNoTexValueAndNormalUnpack(){
+		public void RefreshNoTexValueAndNormalUnpack()
+		{
 			bool newAssetIsNormalMap = false;
-			
-			string path = AssetDatabase.GetAssetPath( textureAsset );
-			if( string.IsNullOrEmpty( path ) )
+
+			string path = AssetDatabase.GetAssetPath(textureAsset);
+			if (string.IsNullOrEmpty(path))
 				newAssetIsNormalMap = false;
-			else{
-				AssetImporter importer = UnityEditor.AssetImporter.GetAtPath( path );
-				if(importer is TextureImporter)
-					newAssetIsNormalMap = ((TextureImporter)importer ).textureType == TextureImporterType.NormalMap;
-				else if(textureAsset is ProceduralTexture && textureAsset.name.EndsWith("_Normal"))
+			else
+			{
+				AssetImporter importer = UnityEditor.AssetImporter.GetAtPath(path);
+				if (importer is TextureImporter)
+					newAssetIsNormalMap = ((TextureImporter)importer).textureType == TextureImporterType.NormalMap;
+#if !UNITY_2018_1_OR_NEWER
+				else if (textureAsset is ProceduralTexture && textureAsset.name.EndsWith("_Normal"))
 					newAssetIsNormalMap = true; // When it's a ProceduralTexture having _Normal as a suffix
+#endif
 				else
 					newAssetIsNormalMap = false; // When it's a RenderTexture or ProceduralTexture
 			}
-			
-			if(newAssetIsNormalMap){
+
+			if (newAssetIsNormalMap)
+			{
 				noTexValue = NoTexValue.Bump;
 				markedAsNormalMap = true;
-			} else if( noTexValue == NoTexValue.Bump){
+			}
+			else if (noTexValue == NoTexValue.Bump)
+			{
 				noTexValue = NoTexValue.Black;
 				markedAsNormalMap = false;
 			}
-			
+
 		}
 
 
-		public override void DrawLowerPropertyBox() {
+		public override void DrawLowerPropertyBox()
+		{
 			GUI.color = Color.white;
 			EditorGUI.BeginChangeCheck();
 			Rect tmp = lowerRect;
 			tmp.height = 16f;
-			if(!IsGlobalProperty()){
-				noTexValue = (NoTexValue)UndoableLabeledEnumPopup(tmp, "Default", noTexValue, "swith default color of " + property.nameDisplay );
+			if (!IsGlobalProperty())
+			{
+				noTexValue = (NoTexValue)UndoableLabeledEnumPopup(tmp, "Default", noTexValue, "swith default color of " + property.nameDisplay);
 				//noTexValue = (NoTexValue)SF_GUI.LabeledEnumField( tmp, "Default", noTexValue, EditorStyles.miniLabel );
 				tmp.y += tmp.height;
 			}
 			bool preMarked = markedAsNormalMap;
 			UndoableToggle(tmp, ref markedAsNormalMap, "Normal map", "normal map decode of " + property.nameDisplay, null);
 			//markedAsNormalMap = GUI.Toggle(tmp, markedAsNormalMap, "Normal map" );
-			if(EditorGUI.EndChangeCheck()){
+			if (EditorGUI.EndChangeCheck())
+			{
 
-				if(markedAsNormalMap && !preMarked)
+				if (markedAsNormalMap && !preMarked)
 					noTexValue = NoTexValue.Bump;
 				OnUpdateNode();
 
@@ -332,31 +396,34 @@ namespace ShaderForge {
 		}
 
 
-		public override string SerializeSpecialData() {
+		public override string SerializeSpecialData()
+		{
 
 			string s = property.Serialize() + ",";
 
-			if( textureAsset != null )
-				s += "tex:" + SF_Tools.AssetToGUID( textureAsset ) + ",";
-			s += "ntxv:" + ( (int)noTexValue ).ToString() + ",";
+			if (textureAsset != null)
+				s += "tex:" + SF_Tools.AssetToGUID(textureAsset) + ",";
+			s += "ntxv:" + ((int)noTexValue).ToString() + ",";
 			s += "isnm:" + markedAsNormalMap.ToString();
 
 			return s;
 
 		}
 
-		public override void DeserializeSpecialData( string key, string value ) {
-			property.Deserialize( key, value );
-			switch( key ) {
+		public override void DeserializeSpecialData(string key, string value)
+		{
+			property.Deserialize(key, value);
+			switch (key)
+			{
 				case "tex":
-					textureAsset = (Texture)SF_Tools.GUIDToAsset( value, typeof( Texture ) );
+					textureAsset = (Texture)SF_Tools.GUIDToAsset(value, typeof(Texture));
 					OnAssignedTexture();
 					break;
 				case "ntxv":
-					noTexValue = (NoTexValue)int.Parse( value );
+					noTexValue = (NoTexValue)int.Parse(value);
 					break;
 				case "isnm":
-					markedAsNormalMap = bool.Parse( value );
+					markedAsNormalMap = bool.Parse(value);
 					break;
 			}
 		}
