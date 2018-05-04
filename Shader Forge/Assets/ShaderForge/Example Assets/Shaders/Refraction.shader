@@ -85,7 +85,7 @@ Shader "Shader Forge/Examples/Refraction" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
                 float Pi = 3.141592654;
                 float InvPi = 0.31830988618;
@@ -251,7 +251,7 @@ Shader "Shader Forge/Examples/Refraction" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
                 float Pi = 3.141592654;
                 float InvPi = 0.31830988618;
@@ -315,7 +315,9 @@ Shader "Shader Forge/Examples/Refraction" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+#ifndef UNITY_PASS_SHADOWCASTER
             #define UNITY_PASS_SHADOWCASTER
+#endif
             #define _GLOSSYENV 1
             #include "UnityCG.cginc"
             #include "Lighting.cginc"

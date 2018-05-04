@@ -110,7 +110,7 @@ Shader "Shader Forge/Examples/Animated Vegetation" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
 ///////// Gloss:
                 float gloss = 0.4;
@@ -254,7 +254,7 @@ Shader "Shader Forge/Examples/Animated Vegetation" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
 ///////// Gloss:
                 float gloss = 0.4;
@@ -295,7 +295,9 @@ Shader "Shader Forge/Examples/Animated Vegetation" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_SHADOWCASTER
+			#ifndef UNITY_PASS_SHADOWCASTER
+				#define UNITY_PASS_SHADOWCASTER
+			#endif
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #include "UnityCG.cginc"
             #include "Lighting.cginc"

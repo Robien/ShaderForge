@@ -27,7 +27,7 @@ Shader "Shader Forge/Examples/Custom Lighting" {
             #include "UnityCG.cginc"
             #pragma fragmentoption ARB_precision_hint_fastest
             #pragma multi_compile_shadowcaster
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
+            #pragma only_renderers d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             struct VertexInput {
                 float4 vertex : POSITION;
@@ -61,7 +61,7 @@ Shader "Shader Forge/Examples/Custom Lighting" {
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
             #pragma multi_compile_fwdbase_fullshadows
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
+            #pragma only_renderers d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             uniform float4 _Color;
             uniform sampler2D _Diffuse; uniform float4 _Diffuse_ST;
@@ -106,7 +106,7 @@ Shader "Shader Forge/Examples/Custom Lighting" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float4 _Diffuse_var = tex2D(_Diffuse,TRANSFORM_TEX(i.uv0, _Diffuse));
                 float3 finalColor = (attenuation*_LightColor0.rgb*((_Diffuse_var.rgb*_Color.rgb*floor(max(0,dot(lightDirection,normalDirection)) * _Bands) / (_Bands - 1))+UNITY_LIGHTMODEL_AMBIENT.rgb+floor(pow(max(0,dot(normalDirection,halfDirection)),exp2(((_Gloss*10.0)+1.0))) * _Bands) / (_Bands - 1)));
                 return fixed4(finalColor,1);
@@ -129,7 +129,7 @@ Shader "Shader Forge/Examples/Custom Lighting" {
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
             #pragma multi_compile_fwdadd_fullshadows
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
+            #pragma only_renderers d3d11 glcore gles gles3 metal d3d11_9x xboxone ps4 psp2 n3ds wiiu 
             #pragma target 3.0
             uniform float4 _Color;
             uniform sampler2D _Diffuse; uniform float4 _Diffuse_ST;
@@ -174,7 +174,7 @@ Shader "Shader Forge/Examples/Custom Lighting" {
                 float3 lightColor = _LightColor0.rgb;
                 float3 halfDirection = normalize(viewDirection+lightDirection);
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float4 _Diffuse_var = tex2D(_Diffuse,TRANSFORM_TEX(i.uv0, _Diffuse));
                 float3 finalColor = (attenuation*_LightColor0.rgb*((_Diffuse_var.rgb*_Color.rgb*floor(max(0,dot(lightDirection,normalDirection)) * _Bands) / (_Bands - 1))+UNITY_LIGHTMODEL_AMBIENT.rgb+floor(pow(max(0,dot(normalDirection,halfDirection)),exp2(((_Gloss*10.0)+1.0))) * _Bands) / (_Bands - 1)));
                 return fixed4(finalColor * 1,0);

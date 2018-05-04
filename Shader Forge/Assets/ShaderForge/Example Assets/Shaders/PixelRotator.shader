@@ -20,7 +20,7 @@ Shader "Shader Forge/Examples/Pixel Rotator" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_FORWARDBASE
+       //     #define UNITY_PASS_FORWARDBASE
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
             #pragma multi_compile_fwdbase_fullshadows
@@ -58,7 +58,7 @@ Shader "Shader Forge/Examples/Pixel Rotator" {
                 float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
                 float3 lightColor = _LightColor0.rgb;
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
 /////// Diffuse:
                 float NdotL = max(0.0,dot( normalDirection, lightDirection ));
@@ -146,7 +146,7 @@ Shader "Shader Forge/Examples/Pixel Rotator" {
                 float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));
                 float3 lightColor = _LightColor0.rgb;
 ////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(attenuation, i, i.posWorld.xyz);
                 float3 attenColor = attenuation * _LightColor0.xyz;
 /////// Diffuse:
                 float NdotL = max(0.0,dot( normalDirection, lightDirection ));
