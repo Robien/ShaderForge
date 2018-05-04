@@ -29,11 +29,7 @@ namespace ShaderForge {
 		[SerializeField]
 		private GUIStyle headerStyle;
 
-		public SF_StatusBox() {
-
-
-
-		}
+		public SF_StatusBox() {	}
 
 		public void Initialize( SF_Editor editor) {
 			this.editor = editor;
@@ -280,12 +276,7 @@ namespace ShaderForge {
 				}
 			}
 			*/
-
-
-
-
 		}
-
 
 		public RenderPlatform GetPrimaryPlatform() {
 
@@ -306,23 +297,28 @@ namespace ShaderForge {
 			// Pick the one that is currently running
 			if( Application.platform == RuntimePlatform.OSXEditor && editor.ps.catMeta.usedRenderers[(int)RenderPlatform.glcore] )
 				return RenderPlatform.glcore;
-			if( Application.platform == RuntimePlatform.WindowsEditor && editor.ps.catMeta.usedRenderers[(int)RenderPlatform.d3d9] )
-				return RenderPlatform.d3d9;
 			if( Application.platform == RuntimePlatform.WindowsEditor && editor.ps.catMeta.usedRenderers[(int)RenderPlatform.d3d11] )
 				return RenderPlatform.d3d11;
+            if (Application.platform == RuntimePlatform.WindowsEditor && editor.ps.catMeta.usedRenderers[(int)RenderPlatform.vulkan])
+                return RenderPlatform.vulkan;
+            if (Application.platform == RuntimePlatform.WindowsEditor && editor.ps.catMeta.usedRenderers[(int)RenderPlatform.d3d9])
+                return RenderPlatform.d3d9;
 
-
-			Debug.LogWarning( "[SF] Unhandled platform settings. Make sure your build target (" + active + ") is sensible, and that you've got platforms enabled to compile for" );
+            Debug.LogWarning( "[SF] Unhandled platform settings. Make sure your build target (" + active + ") is sensible, and that you've got platforms enabled to compile for" );
 			// You're using some weird setup, pick first active one
 			for(int i=0;i<12;i++){
 				if(editor.ps.catMeta.usedRenderers[i])
 					return (RenderPlatform)i;
 			}
+        #if UNITY_2018_1_OR_NEWER
+             Debug.LogError("No renderers compatilable, defaulting to d3d11");
+			return RenderPlatform.d3d11;
+        #else
+            Debug.LogError("No renderers compatilable, defaulting to d3d9");
+            return RenderPlatform.d3d9;
+        #endif
+        }
 
-			Debug.LogError("No renderers compilable, defaulting to d3d9");
-			return RenderPlatform.d3d9;
-		}
 
-
-	}
+    }
 }

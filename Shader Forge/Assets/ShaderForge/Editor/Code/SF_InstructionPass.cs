@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-namespace ShaderForge{
-
-
-	public class SFIns_PassPlat {
+namespace ShaderForge
+{
+	public class SFIns_PassPlat
+    {
 		public RenderPlatform plat;
 		public SF_MinMax vert = new SF_MinMax( 0, 0 );
 		public SF_MinMax frag = new SF_MinMax( 0, 0 );
@@ -20,9 +20,8 @@ namespace ShaderForge{
 	}
 
 
-	public class SFIns_Pass {
-
-
+	public class SFIns_Pass
+    {
 		public List<SFIns_PassPlat> plats = new List<SFIns_PassPlat>(){
 			new SFIns_PassPlat(RenderPlatform.d3d9),
 			new SFIns_PassPlat(RenderPlatform.d3d11),
@@ -35,8 +34,9 @@ namespace ShaderForge{
 			new SFIns_PassPlat(RenderPlatform.ps4),
 			new SFIns_PassPlat(RenderPlatform.psp2),
 			new SFIns_PassPlat(RenderPlatform.n3ds),
-			new SFIns_PassPlat(RenderPlatform.wiiu)
-		};
+			new SFIns_PassPlat(RenderPlatform.wiiu),
+            new SFIns_PassPlat(RenderPlatform.vulkan)
+        };
 
 		public void Parse(ShaderProgram prog, string line, bool ignoreMin ) {
 
