@@ -182,7 +182,6 @@ Shader "Shader Forge/Examples/Animated Vegetation" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_FORWARDADD
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
@@ -366,7 +365,6 @@ Shader "Shader Forge/Examples/Animated Vegetation" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_META 1
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #include "UnityCG.cginc"
             #include "Lighting.cginc"

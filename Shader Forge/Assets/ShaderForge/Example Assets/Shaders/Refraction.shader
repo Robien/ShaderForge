@@ -194,7 +194,6 @@ Shader "Shader Forge/Examples/Refraction" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_FORWARDADD
             #define _GLOSSYENV 1
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"

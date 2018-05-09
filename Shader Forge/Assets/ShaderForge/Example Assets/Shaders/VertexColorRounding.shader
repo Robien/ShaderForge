@@ -63,7 +63,6 @@ Shader "Shader Forge/Examples/Vertex Color Rounding" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_META 1
             #include "UnityCG.cginc"
             #include "UnityMetaPass.cginc"
             #pragma fragmentoption ARB_precision_hint_fastest

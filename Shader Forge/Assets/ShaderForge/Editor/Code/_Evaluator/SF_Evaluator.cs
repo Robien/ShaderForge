@@ -643,7 +643,7 @@ namespace ShaderForge
                     break;
 
                 case PassType.FwdAdd:
-                    App(WrapInIfndef("#define UNITY_PASS_FORWARDADD"));
+                    //App(WrapInIfndef("#define UNITY_PASS_FORWARDADD"));
                     break;
 
                 case PassType.Deferred:
@@ -655,7 +655,7 @@ namespace ShaderForge
                     break;
 
                 case PassType.Meta:
-                    App("#define UNITY_PASS_META 1");
+                    //App("#define UNITY_PASS_META 1");
                     break;
             }
 
